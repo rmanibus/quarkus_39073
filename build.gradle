@@ -1,0 +1,50 @@
+plugins {
+    id 'io.quarkus' apply false
+}
+
+
+allprojects {
+    group = "org.acme"
+    version = "1.0.0-SNAPSHOT"
+}
+
+subprojects {
+
+    if(it.name != "bom"){
+        apply plugin: 'java'
+
+        java {
+            sourceCompatibility = JavaVersion.VERSION_21
+            targetCompatibility = JavaVersion.VERSION_21
+        }
+
+        repositories {
+            mavenCentral()
+            mavenLocal()
+        }
+
+
+        test {
+            systemProperty "java.util.logging.manager", "org.jboss.logmanager.LogManager"
+        }
+        compileJava {
+            options.encoding = 'UTF-8'
+            options.compilerArgs << '-parameters'
+        }
+
+        compileTestJava {
+            options.encoding = 'UTF-8'
+        }
+
+        dependencies {
+            implementation enforcedPlatform(project(':bom'))
+            annotationProcessor platform(project(':bom'))
+            testAnnotationProcessor platform(project(':bom'))
+            compileOnly "org.projectlombok:lombok"
+            annotationProcessor "org.projectlombok:lombok"
+            testCompileOnly "org.projectlombok:lombok"
+            testAnnotationProcessor "org.projectlombok:lombok"
+        }
+    }
+
+}
